@@ -30,7 +30,8 @@ const btnn = document.getElementById('btnn');
 const myInput = document.getElementById('myInput');
 
 let estado='inicio';
-let servicio="";
+let servicio="-";
+let monto="-";
 
 const body = document.body;
 
@@ -66,6 +67,8 @@ function llenarPantalla(texto){
 }
 function cancelar(){
     myInput.value="";
+    estado='preFinal';
+    estados();
 }
 function borrar(){
     valorInicial = myInput.value;
@@ -103,7 +106,7 @@ function estados(){
             cambiaTexto('movTarjeta');
             return;
         }else{
-            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>ERROR: presione solo 1 o 2</p>');
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione solo 1 o 2</p>');
             return;
         }                    
     }
@@ -114,10 +117,10 @@ function estados(){
             cambiaTexto('payServicio');
             return;
         }else if(valor=='2'){
-            cambiaTexto('payTarjeta');
+            cambiaTexto('allTarjeta');
             return;
         }else{
-            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>ERROR: presione solo 1 o 2</p>');
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione solo 1 o 2</p>');
             return;
         }                    
     }
@@ -137,7 +140,7 @@ function estados(){
             cambiaTexto('allServicio');
             return;
         }else{
-            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>ERROR: presione solo 1, 2, 3 o 4</p>');
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione solo 1, 2, 3 o 4</p>');
             return;
         }                    
     }
@@ -146,9 +149,10 @@ function estados(){
         cambiaTexto('allServicio');
         if(/^\d+$/.test(valor)){
             cambiaTexto('allServicioM');
+            servicio=valor;
             return;
         }else{
-            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>ERROR: presione un valor numerico</p>');
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione un valor numerico</p>');
             return;
         }
     }
@@ -156,33 +160,77 @@ function estados(){
     if(estado=='allServicioM'){
         cambiaTexto('allServicioM');
         if(/^\d+$/.test(valor)){
+            monto=valor;
             cambiaTexto('elComprobante');
+            muestraToast('<p class="animate__animated animate__fadeInUpBig"><i class="bi bi-cash-coin"></i>pagando</p>');
             return;
         }else{
-            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>ERROR: presione un valor numerico</p>');
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione un valor numerico</p>');
             return;
         }
     }
 
     if(estado=='elComprobante'){
         cambiaTexto('elComprobante');
-        if(valor=='Sí'){
+        if(valor==='Sí'){
             cambiaTexto('elRecibo');
+            muestraToast('<p class="animate__animated animate__fadeInRightBig"><i class="bi bi-printer"></i>Imprimiendo comprobante</p>');
+            setTimeout(function() {
+                cambiaTexto('preFinal');
+                }, 5000);
             return;
         }else if(valor=='No'){
             cambiaTexto('preFinal');
             return;
         }else{
-            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>ERROR: presione Sí o No</p>');
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione Sí o No</p>');
+            return;
+        }
+    }
+
+
+    if(estado=='preFinal'){
+        cambiaTexto('preFinal');
+        if(valor=='Sí'){
+            cambiaTexto('inicio');
+            return;
+        }else if(valor=='No'){
+            muestraToast('<p class="animate__animated animate__fadeInRightBig"><i class="bi bi-emoji-laughing-fill"></i>Hasta pronto</p>');
+            setTimeout(function() {
+                cambiaTexto('inicio');
+                }, 1000);
+            return;
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione Sí o No</p>');
             return;
         }
     }
 
 
 
+    if(estado=='allTarjeta'){
+        cambiaTexto('allTarjeta');
+        if(/^\d+$/.test(valor)){
+            cambiaTexto('allTarjetaM');
+            servicio=valor;
+            return;
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione un valor numerico</p>');
+            return;
+        }
+    }
 
-    if(estado=='payTarjeta'){
-        cambiaTexto('payTarjeta')                   
+    if(estado=='allTarjetaM'){
+        cambiaTexto('allTarjetaM');
+        if(/^\d+$/.test(valor)){
+            monto=valor;
+            cambiaTexto('elComprobante');
+            muestraToast('<p class="animate__animated animate__fadeInUpBig"><i class="bi bi-cash-coin"></i>pagando</p>');
+            return;
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione un valor numerico</p>');
+            return;
+        }
     }
 
 
@@ -199,7 +247,7 @@ function estados(){
             cambiaTexto('payServicioI');
             return;
         }else{
-            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>ERROR: presione solo 1, 2 o 3</p>');
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione solo 1, 2 o 3</p>');
             return;
         }                    
     }
@@ -240,8 +288,24 @@ switch (st) {
     case 'allServicioM':
         llenarPantalla(`<h2 class='text-center'>Ingrese el monto:</h2><br>`);
       break;
+    case 'allTarjeta':
+        llenarPantalla(`<h2 class='text-center'>Ingrese el número de tarjeta:</h2><br>`);
+      break;
+    case 'allTarjetaM':
+        llenarPantalla(`<h2 class='text-center'>Ingrese el monto:</h2><br>`);
+      break;
     case 'elComprobante':
         llenarPantalla(`<h2>¿Desea imprimir su comprobante?</h2><br>
+        <p>Sí</p> 
+        <p>No</p>`);
+      break;
+    case 'elRecibo':
+        llenarPantalla(`<h2>Usted ha pagado</h2><br>
+        <p>No. servicio o tarjeta:${servicio}</p> 
+        <p>por el monto: ${monto}</p>`);
+      break;
+    case 'preFinal':
+        llenarPantalla(`<h2>¿Desea realizar alguna otra operación?</h2><br>
         <p>Sí</p> 
         <p>No</p>`);
       break;
