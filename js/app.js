@@ -1,3 +1,10 @@
+let clientes = [
+    {nombre:"Eric",tarjeta:"1234",nip:"0011",monto:"1000"},
+    {nombre:"Herme",tarjeta:"2345",nip:"1122",monto:"1000"},
+    {nombre:"Uriel",tarjeta:"3456",nip:"2233",monto:"1000"},
+
+  ]
+
 const datos = document.getElementById('datos');
 const estatus = document.getElementById('estatus');
 
@@ -17,9 +24,13 @@ const btnc = document.getElementById('btnc');
 const btnb = document.getElementById('btnb');
 const btna = document.getElementById('btna');
 
+const btns = document.getElementById('btns');
+const btnn = document.getElementById('btnn');
+
 const myInput = document.getElementById('myInput');
 
 let estado='inicio';
+let servicio="";
 
 const body = document.body;
 
@@ -35,6 +46,10 @@ btn8.addEventListener('click', ()=>tecla(btn8));
 btn9.addEventListener('click', ()=>tecla(btn9));
 btn0.addEventListener('click', ()=>tecla(btn0));
 btnp.addEventListener('click', ()=>tecla(btnp));
+
+btns.addEventListener('click', ()=>tecla(btns));
+btnn.addEventListener('click', ()=>tecla(btnn));
+
 
 btnc.addEventListener('click', cancelar);
 btnb.addEventListener('click', borrar);
@@ -80,7 +95,7 @@ function estados(){
     myInput.value="";
 
     if(estado=='inicio'){
-        cambiaTexto('inicio')
+        cambiaTexto('inicio');
        if(valor=='1'){
             cambiaTexto('movEfectivo');
             return;
@@ -94,7 +109,7 @@ function estados(){
     }
 
     if(estado=='movEfectivo'){
-        cambiaTexto('movEfectivo')
+        cambiaTexto('movEfectivo');
        if(valor=='1'){
             cambiaTexto('payServicio');
             return;
@@ -108,24 +123,63 @@ function estados(){
     }
 
     if(estado=='payServicio'){
-        cambiaTexto('payServicio')
+        cambiaTexto('payServicio');
        if(valor=='1'){
-            cambiaTexto('agua');
+            cambiaTexto('allServicio');
             return;
         }else if(valor=='2'){
-            cambiaTexto('luz');
+            cambiaTexto('allServicio');
             return;
         }else if(valor=='3'){
-            cambiaTexto('telefono');
+            cambiaTexto('allServicio');
             return;
         }else if(valor=='4'){
-            cambiaTexto('otro');
+            cambiaTexto('allServicio');
             return;
         }else{
             muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>ERROR: presione solo 1, 2, 3 o 4</p>');
             return;
         }                    
     }
+
+    if(estado=='allServicio'){
+        cambiaTexto('allServicio');
+        if(/^\d+$/.test(valor)){
+            cambiaTexto('allServicioM');
+            return;
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>ERROR: presione un valor numerico</p>');
+            return;
+        }
+    }
+
+    if(estado=='allServicioM'){
+        cambiaTexto('allServicioM');
+        if(/^\d+$/.test(valor)){
+            cambiaTexto('elComprobante');
+            return;
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>ERROR: presione un valor numerico</p>');
+            return;
+        }
+    }
+
+    if(estado=='elComprobante'){
+        cambiaTexto('elComprobante');
+        if(valor=='Sí'){
+            cambiaTexto('elRecibo');
+            return;
+        }else if(valor=='No'){
+            cambiaTexto('preFinal');
+            return;
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>ERROR: presione Sí o No</p>');
+            return;
+        }
+    }
+
+
+
 
     if(estado=='payTarjeta'){
         cambiaTexto('payTarjeta')                   
@@ -179,6 +233,17 @@ switch (st) {
         <p>2) Luz</p>
         <p>3) Teléfono</p>
         <p>4) Otro</p>`);
+      break;
+    case 'allServicio':
+        llenarPantalla(`<h2 class='text-center'>Ingrese el número de convenio:</h2><br>`);
+      break;
+    case 'allServicioM':
+        llenarPantalla(`<h2 class='text-center'>Ingrese el monto:</h2><br>`);
+      break;
+    case 'elComprobante':
+        llenarPantalla(`<h2>¿Desea imprimir su comprobante?</h2><br>
+        <p>Sí</p> 
+        <p>No</p>`);
       break;
     default:
         llenarPantalla(`<h2>:(</h2><br>`);
