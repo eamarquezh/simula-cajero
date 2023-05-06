@@ -1,0 +1,29 @@
+body{
+    padding: 0px;
+    margin: 0px;
+    font-size: 1.2em;
+}
+#pantalla{
+    width: 100%;
+    height: 15rem;
+    border-radius: 10px 10px 0px 0px;
+    padding: 2px;
+}
+#myInput{
+    width: 100%;
+    height: 3rem;
+    border: 0px;
+    border-radius: 0px 0px 10px 10px 
+    ;
+}
+#myInput[type="text"] {
+    text-align: center;
+    font-weight: bold;
+    font-size: xx-large;
+  }
+#teclado{
+    margin: 1px;
+}
+.col{
+    margin: 5px;
+}
