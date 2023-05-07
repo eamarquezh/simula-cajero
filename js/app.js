@@ -5,6 +5,9 @@ let clientes = [
 
   ]
 
+
+let audio = new Audio('media/audio/atm-button.mp3');
+
 const datos = document.getElementById('datos');
 const estatus = document.getElementById('estatus');
 
@@ -32,6 +35,11 @@ const myInput = document.getElementById('myInput');
 let estado='inicio';
 let servicio="-";
 let monto="-";
+
+let usuario='';
+let tarjeta="";
+let saldo="-";
+let nip="";
 
 const body = document.body;
 
@@ -81,7 +89,23 @@ function aceptar(){
 function tecla(b){
     contenido= myInput.value;
     myInput.value= contenido + b.textContent;
+    audio.play();
 }
+
+function busUsuario(myCard){
+    let val="noo";
+    clientes.forEach(element => {
+        if(element.tarjeta==myCard){
+            val = element.nombre;
+            nip = element.nip;
+            saldo = element.monto;
+        }
+    });
+    return val;
+  }
+
+
+
 
 function muestraToast(mensaje){
     let toast = new bootstrap.Toast(myToast);
@@ -252,6 +276,52 @@ function estados(){
         }                    
     }
 
+    if(estado=='conSaldo'){
+        cambiaTexto('conSaldo');
+        if(/^\d+$/.test(valor)){
+            if(busUsuario(valor)=="noo"){
+                muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>no existe su tarjeta</p>');    
+                return;
+            }else{
+                cambiaTexto('conSaldoN');
+                myInput.type='password';
+                tarjeta=valor;
+                usuario=busUsuario(valor);
+                return;
+            }  
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione un valor numerico</p>');
+            return;
+        }                   
+    }
+
+    if(estado=='conSaldoN'){
+        if(nip==valor){
+            cambiaTexto('mueSaldo');
+            return;
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>NIP no valido</p>');
+            return;
+        }                   
+    }
+
+    if(estado=='mueSaldo'){
+        if(valor==='Sí'){
+            cambiaTexto('elReciboSaldo');
+            muestraToast('<p class="animate__animated animate__fadeInRightBig"><i class="bi bi-printer"></i>Imprimiendo comprobante</p>');
+            setTimeout(function() {
+                cambiaTexto('preFinal');
+                }, 5000);
+            return;
+        }else if(valor=='No'){
+            cambiaTexto('preFinal');
+            return;
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione Sí o No</p>');
+            return;
+        }                   
+    }
+
 
 
 
@@ -304,8 +374,25 @@ switch (st) {
         <p>No. servicio o tarjeta:${servicio}</p> 
         <p>por el monto: ${monto}</p>`);
       break;
+    case 'elReciboSaldo':
+        llenarPantalla(`<h2>A continuacion su saldo :</h2><br>
+        <p>No. tarjeta:${tarjeta}</p> 
+        <p>por el monto: ${saldo}</p>`);
+      break;
     case 'preFinal':
         llenarPantalla(`<h2>¿Desea realizar alguna otra operación?</h2><br>
+        <p>Sí</p> 
+        <p>No</p>`);
+      break;
+    case 'conSaldo':
+        llenarPantalla(`<h2 class='text-center'>Ingrese su tarjeta:</h2><br>`);
+      break;
+    case 'conSaldoN':
+        llenarPantalla(`<h2 class='text-center'>Hola ${usuario} ingrese su NIP:</h2><br>`);
+      break;
+    case 'mueSaldo':
+        llenarPantalla(`<h2 class='text-center'>Su saldo es de: ${saldo}</h2><br>
+        <p>¿Desea imprimir comprobante?</p>
         <p>Sí</p> 
         <p>No</p>`);
       break;
@@ -314,5 +401,6 @@ switch (st) {
       break;
   }
   estado=st;
+  myInput.type='text';
   console.log("estado: "+estado);
 }
