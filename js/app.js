@@ -1,3 +1,4 @@
+//codigo en https://github.com/eamarquezh/simula-cajero
 let clientes = [
     {nombre:"Eric",tarjeta:"1234",nip:"0011",monto:"1000"},
     {nombre:"Herme",tarjeta:"2345",nip:"1122",monto:"1000"},
