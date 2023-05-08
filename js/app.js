@@ -1,8 +1,8 @@
 //codigo en https://github.com/eamarquezh/simula-cajero
 let clientes = [
-    {nombre:"Eric",tarjeta:"1234",nip:"0011",monto:"1000"},
-    {nombre:"Herme",tarjeta:"2345",nip:"1122",monto:"1000"},
-    {nombre:"Uriel",tarjeta:"3456",nip:"2233",monto:"1000"},
+    {nombre:"usr1",tarjeta:"1234",nip:"0011",monto:"1000"},
+    {nombre:"usr2",tarjeta:"2345",nip:"1122",monto:"1000"},
+    {nombre:"usr3",tarjeta:"3456",nip:"2233",monto:"1000"},
 
   ]
 
@@ -628,7 +628,8 @@ switch (st) {
         llenarPantalla(`<h2 class='text-center'>Ingrese el número de convenio:</h2><br>`);
       break;
     case 'allServicioMI':
-        llenarPantalla(`<h2 class='text-center'>Ingrese el monto:</h2><br>`);
+        llenarPantalla(`<h2 class='text-center'>Ingrese el monto:</h2>
+        <p>Saldo disponible: ${saldo}</p>`);
       break;
     case 'elComprobanteI':
         llenarPantalla(`<h2 class='text-center'>Su saldo es de: ${saldo}</h2>
