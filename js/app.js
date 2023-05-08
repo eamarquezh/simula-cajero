@@ -41,6 +41,7 @@ let usuario='';
 let tarjeta="";
 let saldo="-";
 let nip="";
+let retiro="";
 
 const body = document.body;
 
@@ -97,9 +98,10 @@ function busUsuario(myCard){
     let val="noo";
     clientes.forEach(element => {
         if(element.tarjeta==myCard){
-            val = element.nombre;
+            usuario = element.nombre;
             nip = element.nip;
             saldo = element.monto;
+            val = element.nombre;
         }
     });
     return val;
@@ -323,6 +325,87 @@ function estados(){
         }                   
     }
 
+    if(estado=='retEfectivo'){
+        cambiaTexto('retEfectivo');
+        if(/^\d+$/.test(valor)){
+            if(busUsuario(valor)=="noo"){
+                muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>no existe su tarjeta</p>');    
+                return;
+            }else{
+                cambiaTexto('conSaldoN2');
+                myInput.type='password';
+                tarjeta=valor;
+                usuario=busUsuario(valor);
+                return;
+            }  
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione un valor numerico</p>');
+            return;
+        }                   
+    }
+
+    if(estado=='conSaldoN2'){
+        if(nip==valor){
+            cambiaTexto('mueSaldo2');
+            return;
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>NIP no valido</p>');
+            return;
+        }                   
+    }
+
+    if(estado=='mueSaldo2'){
+        if(/^\d+$/.test(valor)){
+            if((saldo-valor)<=0){
+                muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Saldo insuficiente</p>');    
+                return;
+            }else{
+                saldo=saldo-valor;
+                retiro=valor;
+                muestraToast('<p class="animate__animated animate__fadeInUpBig"><i class="bi bi-cash-coin"></i>Retirando dinero</p>');
+                cambiaTexto('mueSaldo3');
+                return;
+            }  
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione un valor numerico</p>');
+            return;
+        }                    
+    }
+
+    if(estado=='mueSaldo3'){
+        if(valor==='Sí'){
+            cambiaTexto('elReciboSaldo2');
+            muestraToast('<p class="animate__animated animate__fadeInRightBig"><i class="bi bi-printer"></i>Imprimiendo comprobante</p>');
+            setTimeout(function() {
+                cambiaTexto('preFinal');
+                }, 5000);
+            return;
+        }else if(valor=='No'){
+            cambiaTexto('preFinal');
+            return;
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione Sí o No</p>');
+            return;
+        }                   
+    }
+
+    if(estado=='elReciboSaldo2'){
+        if(valor==='Sí'){
+            cambiaTexto('elReciboSaldo');
+            muestraToast('<p class="animate__animated animate__fadeInRightBig"><i class="bi bi-printer"></i>Imprimiendo comprobante</p>');
+            setTimeout(function() {
+                cambiaTexto('preFinal');
+                }, 5000);
+            return;
+        }else if(valor=='No'){
+            cambiaTexto('preFinal');
+            return;
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione Sí o No</p>');
+            return;
+        }                   
+    }
+    
 
 
 
@@ -380,6 +463,12 @@ switch (st) {
         <p>No. tarjeta:${tarjeta}</p> 
         <p>por el monto: ${saldo}</p>`);
       break;
+    case 'elReciboSaldo2':
+        llenarPantalla(`<h2>A continuacion su saldo :</h2><br>
+        <p>No. tarjeta:${tarjeta}</p>
+        <p>Saldo actual:${saldo}</p>
+        <p>retiro: ${retiro}</p>`);
+      break;
     case 'preFinal':
         llenarPantalla(`<h2>¿Desea realizar alguna otra operación?</h2><br>
         <p>Sí</p> 
@@ -397,8 +486,24 @@ switch (st) {
         <p>Sí</p> 
         <p>No</p>`);
       break;
+      case 'retEfectivo':
+        llenarPantalla(`<h2 class='text-center'>Ingrese su tarjeta:</h2><br>`);
+      break;
+    case 'conSaldoN2':
+        llenarPantalla(`<h2 class='text-center'>Hola ${usuario} ingrese su NIP:</h2><br>`);
+      break;
+    case 'mueSaldo2':
+        llenarPantalla(`<h2 class='text-center'>Su saldo es de: ${saldo}</h2><br>
+        <p>Ingrese el monto a retirar</p>`);
+      break;
+    case 'mueSaldo3':
+        llenarPantalla(`<h2 class='text-center'>Su saldo despues de retirar es: ${saldo}</h2><br>
+        <p>¿Desea imprimir comprobante?</p>
+        <p>Sí</p> 
+        <p>No</p>`);
+      break;
     default:
-        llenarPantalla(`<h2>:(</h2><br>`);
+        llenarPantalla(`<h2>No hay pantallas para esta funcionalidad</h2><br>`);
       break;
   }
   estado=st;
