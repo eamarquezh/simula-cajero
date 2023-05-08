@@ -5,7 +5,7 @@ body{
 }
 #pantalla{
     width: 100%;
-    height: 15rem;
+    height: 20rem;
     border-radius: 10px 10px 0px 0px;
     padding: 2px;
 }
@@ -17,6 +17,11 @@ body{
     ;
 }
 #myInput[type="text"] {
+    text-align: center;
+    font-weight: bold;
+    font-size: xx-large;
+  }
+#myInput[type="password"] {
     text-align: center;
     font-weight: bold;
     font-size: xx-large;

@@ -8,6 +8,7 @@ let clientes = [
 
 
 let audio = new Audio('media/audio/atm-button.mp3');
+let notify = new Audio('media/audio/notification.mp3');
 
 const datos = document.getElementById('datos');
 const estatus = document.getElementById('estatus');
@@ -42,6 +43,7 @@ let tarjeta="";
 let saldo="-";
 let nip="";
 let retiro="";
+let pagaste="";
 
 const body = document.body;
 
@@ -111,6 +113,7 @@ function busUsuario(myCard){
 
 
 function muestraToast(mensaje){
+    notify.play();
     let toast = new bootstrap.Toast(myToast);
     estatus.innerHTML = mensaje;
     toast.show();
@@ -155,15 +158,19 @@ function estados(){
     if(estado=='payServicio'){
         cambiaTexto('payServicio');
        if(valor=='1'){
+            servicio="Agua";
             cambiaTexto('allServicio');
             return;
         }else if(valor=='2'){
+            servicio="Luz";
             cambiaTexto('allServicio');
             return;
         }else if(valor=='3'){
+            servicio="Telefono";
             cambiaTexto('allServicio');
             return;
         }else if(valor=='4'){
+            servicio="Otro";
             cambiaTexto('allServicio');
             return;
         }else{
@@ -176,7 +183,6 @@ function estados(){
         cambiaTexto('allServicio');
         if(/^\d+$/.test(valor)){
             cambiaTexto('allServicioM');
-            servicio=valor;
             return;
         }else{
             muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione un valor numerico</p>');
@@ -271,7 +277,7 @@ function estados(){
             cambiaTexto('retEfectivo');
             return;
         }else if(valor=='3'){
-            cambiaTexto('payServicioI');
+            cambiaTexto('conSaldoI');
             return;
         }else{
             muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione solo 1, 2 o 3</p>');
@@ -405,6 +411,108 @@ function estados(){
             return;
         }                   
     }
+
+
+    if(estado=='conSaldoI'){
+        cambiaTexto('conSaldoI');
+        if(/^\d+$/.test(valor)){
+            if(busUsuario(valor)=="noo"){
+                muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>no existe su tarjeta</p>');    
+                return;
+            }else{
+                cambiaTexto('conSaldoNI');
+                myInput.type='password';
+                tarjeta=valor;
+                usuario=busUsuario(valor);
+                return;
+            }  
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione un valor numerico</p>');
+            return;
+        }                   
+    }
+
+    if(estado=='conSaldoNI'){
+        if(nip==valor){
+            cambiaTexto('mueSaldoI');
+            return;
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>NIP no valido</p>');
+            return;
+        }                   
+    }
+
+    if(estado=='mueSaldoI'){
+        if(valor=='1'){
+            servicio="Agua";
+            cambiaTexto('allServicioI');
+            return;
+        }else if(valor=='2'){
+            servicio="Luz";
+            cambiaTexto('allServicioI');
+            return;
+        }else if(valor=='3'){
+            servicio="Telefono";
+            cambiaTexto('allServicioI');
+            return;
+        }else if(valor=='4'){
+            servicio="Otro";
+            cambiaTexto('allServicioI');
+            return;
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione solo 1, 2, 3 o 4</p>');
+            return;
+        }                              
+    }
+
+    if(estado=='allServicioI'){
+        cambiaTexto('allServicio');
+        if(/^\d+$/.test(valor)){
+            cambiaTexto('allServicioMI');
+            return;
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione un valor numerico</p>');
+            return;
+        }
+    }
+
+    if(estado=='allServicioMI'){
+        cambiaTexto('allServicioMI');
+        if(/^\d+$/.test(valor)){
+            if((saldo-valor)<=0){
+                muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Saldo insuficiente</p>');    
+                return;
+            }else{
+                monto=valor;
+                saldo=saldo-monto;
+                pagaste=monto;
+                cambiaTexto('elComprobanteI');
+                muestraToast('<p class="animate__animated animate__fadeInUpBig"><i class="bi bi-cash-coin"></i>pagando</p>');
+                return;
+                return;
+            } 
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione un valor numerico</p>');
+            return;
+        }
+    }
+
+    if(estado=='elComprobanteI'){
+        if(valor==='Sí'){
+            cambiaTexto('elReciboSaldoI');
+            muestraToast('<p class="animate__animated animate__fadeInRightBig"><i class="bi bi-printer"></i>Imprimiendo comprobante</p>');
+            setTimeout(function() {
+                cambiaTexto('preFinal');
+                }, 5000);
+            return;
+        }else if(valor=='No'){
+            cambiaTexto('preFinal');
+            return;
+        }else{
+            muestraToast('<p class="animate__animated animate__jello"><i class="bi bi-exclamation-triangle"></i>Por favor presione Sí o No</p>');
+            return;
+        }                   
+    }
     
 
 
@@ -455,7 +563,7 @@ switch (st) {
       break;
     case 'elRecibo':
         llenarPantalla(`<h2>Usted ha pagado</h2><br>
-        <p>No. servicio o tarjeta:${servicio}</p> 
+        <p>Servicio pagado:${servicio}</p> 
         <p>por el monto: ${monto}</p>`);
       break;
     case 'elReciboSaldo':
@@ -478,7 +586,7 @@ switch (st) {
         llenarPantalla(`<h2 class='text-center'>Ingrese su tarjeta:</h2><br>`);
       break;
     case 'conSaldoN':
-        llenarPantalla(`<h2 class='text-center'>Hola ${usuario} ingrese su NIP:</h2><br>`);
+        llenarPantalla(`<h2 class='text-center'>Hola ${usuario}</h2> <h3 class='text-center'>ingrese su NIP:</h3><br>`);
       break;
     case 'mueSaldo':
         llenarPantalla(`<h2 class='text-center'>Su saldo es de: ${saldo}</h2><br>
@@ -486,11 +594,11 @@ switch (st) {
         <p>Sí</p> 
         <p>No</p>`);
       break;
-      case 'retEfectivo':
+    case 'retEfectivo':
         llenarPantalla(`<h2 class='text-center'>Ingrese su tarjeta:</h2><br>`);
       break;
     case 'conSaldoN2':
-        llenarPantalla(`<h2 class='text-center'>Hola ${usuario} ingrese su NIP:</h2><br>`);
+        llenarPantalla(`<h2 class='text-center'>Hola ${usuario}</h2> <h3 class='text-center'>ingrese su NIP:</h3><br>`);
       break;
     case 'mueSaldo2':
         llenarPantalla(`<h2 class='text-center'>Su saldo es de: ${saldo}</h2><br>
@@ -501,6 +609,43 @@ switch (st) {
         <p>¿Desea imprimir comprobante?</p>
         <p>Sí</p> 
         <p>No</p>`);
+      break;
+      case 'conSaldoI':
+        llenarPantalla(`<h2 class='text-center'>Ingrese su tarjeta:</h2><br>`);
+      break;
+    case 'conSaldoNI':
+        llenarPantalla(`<h2 class='text-center'>Hola ${usuario}</h2> <h3 class='text-center'>ingrese su NIP:</h3><br>`);
+      break;
+    case 'mueSaldoI':
+        llenarPantalla(`<h2 class='text-center'>Su saldo es de: ${saldo}</h2><br>
+        <p>Qué servicio desea pagar?</p>
+        <p>1) Agua</p> 
+        <p>2) Luz</p>
+        <p>3) Teléfono</p>
+        <p>4) Otro</p>`);
+      break;
+    case 'allServicioI':
+        llenarPantalla(`<h2 class='text-center'>Ingrese el número de convenio:</h2><br>`);
+      break;
+    case 'allServicioMI':
+        llenarPantalla(`<h2 class='text-center'>Ingrese el monto:</h2><br>`);
+      break;
+    case 'elComprobanteI':
+        llenarPantalla(`<h2 class='text-center'>Su saldo es de: ${saldo}</h2>
+        <p>No. tarjeta:${tarjeta}</p>
+        <p>Saldo actual:${saldo}</p>
+        <p>Pago: ${pagaste}</p>
+        <p>Servicio: ${servicio}</p>
+        <p>¿Desea imprimir su comprobante?</p>
+        <p>Sí</p> 
+        <p>No</p>`);
+      break;
+    case 'elReciboSaldoI':
+        llenarPantalla(`<h2>Informacion del movimiento :</h2><br>
+        <p>No. tarjeta:${tarjeta}</p>
+        <p>Saldo actual:${saldo}</p>
+        <p>Pago: ${pagaste}</p>
+        <p>Servicio: ${servicio}</p>`);
       break;
     default:
         llenarPantalla(`<h2>No hay pantallas para esta funcionalidad</h2><br>`);
